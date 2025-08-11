@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Dashboard - Selamat datang, {{ user.username }}! ({{ user.role }})</h2>
+
+    {% if user.role == 'teacher' %}
+        <h3>Ujian yang Tersedia</h3>
+        <p><a href="{{ url_for('manage_exams') }}">Kelola Ujian dan Pertanyaan</a></p>
+        {% if exams %}
+            <ul>
+                {% for exam in exams %}
+                    <li>
+                        <strong>{{ exam.title }}</strong> - {{ exam.description }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Belum ada ujian yang dibuat.</p>
+        {% endif %}
+
+    {% elif user.role == 'student' %}
+        <h3>Ujian yang Tersedia untuk Anda</h3>
+        {% if exams %}
+            <ul>
+                {% for exam in exams %}
+                    <li>
+                        <strong>{{ exam.title }}</strong> - {{ exam.description }}
+                        <a href="{{ url_for('take_exam', exam_id=exam.id) }}">Kerjakan Ujian Ini</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Belum ada ujian yang tersedia.</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

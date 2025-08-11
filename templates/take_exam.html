@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Kerjakan Ujian: {{ exam.title }}</h2>
+    <p>{{ exam.description }}</p>
+
+    {% if exam.questions %}
+        <form method="POST">
+            {% for question in exam.questions %}
+                <div class="question-block">
+                    <h4>{{ loop.index }}. {{ question.text }}</h4>
+                    {% for option in question.options %}
+                        <p>
+                            <input type="radio" id="option_{{ option.id }}" name="question_{{ question.id }}" value="{{ option.id }}" required>
+                            <label for="option_{{ option.id }}">{{ option.text }}</label>
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <p><input type="submit" value="Selesai Ujian"></p>
+        </form>
+    {% else %}
+        <p>Ujian ini belum memiliki pertanyaan.</p>
+    {% endif %}
+{% endblock %}

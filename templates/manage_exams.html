@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Kelola Ujian</h2>
+
+    <h3>Buat Ujian Baru</h3>
+    <form method="POST" class="exam-form">
+        {{ exam_form.hidden_tag() }}
+        <p>
+            {{ exam_form.title.label }}<br>
+            {{ exam_form.title(size=64) }}
+            {% for error in exam_form.title.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ exam_form.description.label }}<br>
+            {{ exam_form.description(cols=50, rows=5) }}
+            {% for error in exam_form.description.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ exam_form.submit(name='create_exam') }}</p>
+    </form>
+
+    <hr>
+
+    <h3>Tambah Pertanyaan ke Ujian yang Ada</h3>
+    <form method="POST" class="question-form">
+        {{ question_form.hidden_tag() }}
+        <p>
+            <label for="exam_id">Pilih Ujian:</label>
+            <select name="exam_id" id="exam_id" required>
+                {% for exam in exams %}
+                    <option value="{{ exam.id }}">{{ exam.title }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            {{ question_form.text.label }}<br>
+            {{ question_form.text(cols=50, rows=3) }}
+            {% for error in question_form.text.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <h4>Opsi Jawaban</h4>
+        {% for i in range(1, 5) %}
+            <p>
+                {{ question_form[f'option_{i}'].label }}
+                {{ question_form[f'option_{i}'](size=50) }}
+                {{ question_form[f'is_correct_{i}'].label }}
+                {{ question_form[f'is_correct_{i}']() }}
+                {% for error in question_form[f'option_{i}'].errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+        {% endfor %}
+        <p>{{ question_form.submit(name='add_question') }}</p>
+    </form>
+
+    <hr>
+
+    <h3>Daftar Ujian dan Pertanyaan</h3>
+    {% if exams %}
+        <ul>
+            {% for exam in exams %}
+                <li>
+                    <h4>{{ exam.title }} (ID: {{ exam.id }})</h4>
+                    <p>{{ exam.description }}</p>
+                    {% if exam.questions %}
+                        <h5>Pertanyaan:</h5>
+                        <ul>
+                            {% for question in exam.questions %}
+                                <li>
+                                    <strong>Q: {{ question.text }}</strong>
+                                    <ul>
+                                        {% for option in question.options %}
+                                            <li>{{ option.text }} {% if option.is_correct %}(Benar){% endif %}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Belum ada pertanyaan untuk ujian ini.</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Belum ada ujian yang dibuat.</p>
+    {% endif %}
+{% endblock %}
