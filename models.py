@@ -1,19 +1,19 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
-from flask_login import UserMixin
-from database import Base
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey # Import modul yang diperlukan dari SQLAlchemy
+from sqlalchemy.orm import relationship # Untuk mengelola relasi antar tabel 
+from flask_login import UserMixin # Untuk integrasi dengan Flask-Login
+from database import Base # Import Base dari database untuk mendefinisikan model
 
-class User(Base, UserMixin):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    username = Column(String(80), unique=True, nullable=False)
-    password = Column(String(120), nullable=False)
+class User(Base, UserMixin): # kelas User yang mewarisi dari Base dan UserMixin untuk integrasi dengan Flask-Login
+    __tablename__ = 'users' #   Nama tabel di database
+    id = Column(Integer, primary_key=True) # Kolom id sebagai primary key
+    username = Column(String(80), unique=True, nullable=False) # Kolom username yang unik dan tidak boleh kosong
+    password = Column(String(120), nullable=False) # Kolom password yang tidak boleh kosong
     role = Column(String(20), default='student') # 'student' atau 'teacher'
 
-    exams_taken = relationship('Answer', back_populates='user')
+    exams_taken = relationship('Answer', back_populates='user') # Relasi ke tabel Answer untuk menyimpan jawaban yang diberikan oleh user
 
-    def __repr__(self):
-        return f'<User {self.username}>'
+    def __repr__(self): #   Mengembalikan representasi string dari objek User
+        return f'<User {self.username}>' # Untuk debugging dan logging
 
 class Exam(Base):
     __tablename__ = 'exams'

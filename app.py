@@ -29,9 +29,9 @@ def teardown_request(exception=None):
 
 # --- Routes ---
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/') # Halaman utama
+def index(): # Tampilkan halaman utama
+    return render_template('index.html') # Ganti dengan template yang sesuai
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -88,14 +88,14 @@ def manage_exams():
     exam_form = ExamForm()
     question_form = QuestionForm()
 
-    if exam_form.validate_on_submit() and 'create_exam' in request.form:
+    if exam_form.validate_on_submit() and exam_form.submit.data:
         new_exam = Exam(title=exam_form.title.data, description=exam_form.description.data)
         db_session.add(new_exam)
         db_session.commit()
         flash('Ujian berhasil dibuat!', 'success')
         return redirect(url_for('manage_exams'))
 
-    if question_form.validate_on_submit() and 'add_question' in request.form:
+    if question_form.validate_on_submit() and question_form.submit.data:
         exam_id = int(request.form.get('exam_id'))
         exam = db_session.query(Exam).get(exam_id)
         if not exam:

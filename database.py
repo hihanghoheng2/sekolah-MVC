@@ -6,6 +6,7 @@ engine = create_engine('sqlite:///exam_management.db') # Menggunakan SQLite
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
+# Inisialisasi Base class untuk model
 Base = declarative_base() # Base class untuk semua model
 Base.query = db_session.query # Menambahkan query ke Base class
 

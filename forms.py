@@ -3,6 +3,9 @@ from wtforms import StringField, PasswordField, SubmitField, TextAreaField, Bool
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 from models import User
 
+from database import db_session
+from models import User
+
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=25)])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -10,7 +13,8 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Daftar')
 
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
+        # Menggunakan db_session.query(User) secara eksplisit
+        user = db_session.query(User).filter_by(username=username.data).first()
         if user:
             raise ValidationError('Username sudah ada. Silakan pilih username lain.')
 
