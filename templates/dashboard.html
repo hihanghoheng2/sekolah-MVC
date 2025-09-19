@@ -1,36 +1,71 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Dashboard - Selamat datang, {{ user.username }}! ({{ user.role }})</h2>
+    <h1 class="mt-4">Selamat Datang, {{ current_user.username }}!</h1>
 
-    {% if user.role == 'teacher' %}
-        <h3>Ujian yang Tersedia</h3>
-        <p><a href="{{ url_for('manage_exams') }}">Kelola Ujian dan Pertanyaan</a></p>
-        {% if exams %}
-            <ul>
-                {% for exam in exams %}
-                    <li>
-                        <strong>{{ exam.title }}</strong> - {{ exam.description }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>Belum ada ujian yang dibuat.</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
         {% endif %}
+    {% endwith %}
+    
+    {% if current_user.role == 'teacher' %}
+        <p>Anda telah login sebagai **Guru**.</p>
+        <p><a href="{{ url_for('manage_exams') }}" class="btn btn-primary">Kelola Ujian</a></p>
+    {% else %}
+        <p>Anda telah login sebagai **Siswa**.</p>
+        
+        <h2 class="mt-5">Ujian yang Tersedia</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Judul Ujian</th>
+                    <th>Deskripsi</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                    <tr>
+                        <td>{{ exam.title }}</td>
+                        <td>{{ exam.description }}</td>
+                        <td>
+                            <a href="{{ url_for('take_exam', exam_id=exam.id) }}" class="btn btn-sm btn-primary">Kerjakan</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">Tidak ada ujian yang tersedia saat ini.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    {% elif user.role == 'student' %}
-        <h3>Ujian yang Tersedia untuk Anda</h3>
-        {% if exams %}
-            <ul>
+        <h2 class="mt-5">Riwayat Ujian Anda</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Judul Ujian</th>
+                    <th>Skor</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
                 {% for exam in exams %}
-                    <li>
-                        <strong>{{ exam.title }}</strong> - {{ exam.description }}
-                        <a href="{{ url_for('take_exam', exam_id=exam.id) }}">Kerjakan Ujian Ini</a>
-                    </li>
+                    {% if exam.answers %}
+                        <tr>
+                            <td>{{ exam.title }}</td>
+                            <td>{{ exam.answers.score }}</td>
+                            <td>
+                                <a href="{{ url_for('take_exam', exam_id=exam.id) }}" class="btn btn-sm btn-primary">Kerjakan Ulang</a>
+                                <a href="{{ url_for('download_results', exam_id=exam.id) }}" class="btn btn-sm btn-success">Unduh PDF</a>
+                            </td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
-            </ul>
-        {% else %}
-            <p>Belum ada ujian yang tersedia.</p>
-        {% endif %}
+            </tbody>
+        </table>
     {% endif %}
 {% endblock %}
